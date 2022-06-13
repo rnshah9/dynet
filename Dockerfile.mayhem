@@ -1,0 +1,19 @@
+FROM --platform=linux/amd64 ubuntu:22.04 as builder
+
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y vim less file locate wget && echo 'alias locate="updatedb && locate"' >> ~/.bashrc
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget unzip
+
+WORKDIR /eigen
+RUN wget https://github.com/clab/dynet/releases/download/2.1/eigen-b2e267dc99d4.zip
+RUN unzip eigen-b2e267dc99d4.zip
+WORKDIR /eigen/build
+RUN cmake ..
+RUN make
+RUN make install
+
+COPY . /repo
+WORKDIR /repo/build
+RUN cmake .. -DENABLE_CPP_EXAMPLES=ON -DEIGEN3_INCLUDE_DIR=/usr/local/include/eigen3
+RUN make -j8

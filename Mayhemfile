@@ -1,0 +1,10 @@
+project: dynet
+target: dynet
+image: ghcr.io/rnshah9/playground:dynet
+testsuite:
+  - file://test
+#t
+cmds:
+  - cmd: /repo/build/examples/fflm @@
+    env:
+      DISABLE_SMOKETEST: '1'
